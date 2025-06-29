@@ -133,10 +133,14 @@
       loadCart();
     });
 
-    // Redirect to order summary page on checkout
     checkoutBtn.addEventListener("click", () => {
-      window.location.href = "order-summary.html";
+      if (JSON.parse(localStorage.getItem("cart") || "[]").length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      window.location.href = "order-summary.html";  // Redirect to order summary page
     });
+
   </script>
 </body>
 </html>
