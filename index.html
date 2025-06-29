@@ -15,15 +15,25 @@
   </head>
   <body class="bg-orange-50 text-gray-800">
 
-    <!-- Navbar -->
-    <header class="bg-white shadow-md sticky top-0 z-50 p-4 flex justify-between items-center">
-      <h1 class="text-xl font-bold text-orange-600">Navya's Kitchen</h1>
-      <nav>
-        <a href="#story" class="text-gray-700 hover:text-orange-600 mx-2">Her Story</a>
-        <a href="menu.html" class="text-gray-700 hover:text-orange-600 mx-2">Menu</a>
-        <a href="#contact" class="text-gray-700 hover:text-orange-600 mx-2">Contact</a>
-      </nav>
-    </header>
+<!-- Navbar (add to every page) -->
+<header class="bg-white shadow-md sticky top-0 z-50 p-4 flex justify-between items-center">
+  <a href="index.html" class="text-xl font-bold text-orange-600">Navya's Kitchen</a>
+  <nav class="text-sm">
+    <a href="menu.html" class="text-gray-700 hover:text-orange-600 mx-2">Menu</a>
+    <a href="cart.html" class="text-gray-700 hover:text-orange-600 mx-2">Cart 🛒<span id="cart-count" class="text-xs text-white bg-red-500 px-2 py-0.5 rounded-full ml-1">0</span></a>
+    <a href="order-history.html" class="text-gray-700 hover:text-orange-600 mx-2">My Orders</a>
+    <a href="login.html" class="text-gray-700 hover:text-orange-600 mx-2">Login</a>
+  </nav>
+</header>
+
+<script>
+  // Cart count from localStorage
+  document.addEventListener("DOMContentLoaded", () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    document.getElementById("cart-count").textContent = cart.length;
+  });
+</script>
+
 
     <!-- Hero Banner -->
     <section class="text-center bg-orange-100 p-6">
