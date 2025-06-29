@@ -173,11 +173,8 @@
 
         // Clear cart and form
         localStorage.removeItem("cart");
-        cart = [];
-        renderOrderItems();
-        form.reset();
-        form.style.display = "none";
-        successMessage.classList.remove("hidden");
+        window.location.href = "order-placed.html";
+
 
         // Optionally redirect or show further info here
       } catch (error) {
