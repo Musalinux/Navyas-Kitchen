@@ -10,8 +10,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <!-- EmailJS SDK v4 (module) -->
+  <script type="module" src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
 <body class="bg-orange-50 text-gray-800 min-h-screen flex flex-col">
 
@@ -76,17 +76,14 @@
     &copy; 2025 Navya's Cloud Kitchen. All rights reserved.
   </footer>
 
-  <script>
+  <script type="module">
+    import emailjs from 'https://cdn.emailjs.com/dist/email.min.js';
+
     window.onload = function () {
       console.log("Page loaded, initializing EmailJS and Firebase...");
 
-      // Initialize EmailJS
-      try {
-        emailjs.init("P-GPrhdHp8xks6I3k"); // your EmailJS User ID
-        console.log("EmailJS initialized successfully.");
-      } catch (e) {
-        console.error("EmailJS initialization error:", e);
-      }
+      // Initialize EmailJS with your user ID (public key)
+      emailjs.init("P-GPrhdHp8xks6I3k");
 
       // Firebase config
       const firebaseConfig = {
@@ -99,12 +96,8 @@
         measurementId: "G-VT5ZG2231H"
       };
 
-      try {
-        firebase.initializeApp(firebaseConfig);
-        console.log("Firebase initialized successfully.");
-      } catch (e) {
-        console.error("Firebase initialization error:", e);
-      }
+      firebase.initializeApp(firebaseConfig);
+      console.log("Firebase initialized successfully.");
 
       const db = firebase.firestore();
 
@@ -174,7 +167,7 @@
           await db.collection("orders").add(orderData);
           console.log("Order saved to Firestore successfully.");
 
-          // Convert cart items to HTML string for email template (EmailJS expects a string)
+          // Compose HTML string of order items for email
           const orderItemsHtmlString = cart.map(item =>
             `<tr>
               <td style="padding: 8px; border: 1px solid #ccc;">${item.name}</td>
