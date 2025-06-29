@@ -70,10 +70,6 @@
         Place Order
       </button>
     </form>
-
-    <div id="success-message" class="hidden mt-6 p-4 bg-green-100 text-green-800 rounded">
-      Thank you! Your order has been placed successfully. We will contact you shortly.
-    </div>
   </main>
 
   <footer class="bg-white p-4 text-center text-sm text-gray-500">
@@ -102,7 +98,6 @@
     const orderItemsEl = document.getElementById("order-items");
     const orderTotalEl = document.getElementById("order-total");
     const form = document.getElementById("order-form");
-    const successMessage = document.getElementById("success-message");
 
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
@@ -171,13 +166,10 @@
           phone: phone
         });
 
-
-        // Clear cart and form
+        // Clear cart and redirect to order placed page
         localStorage.removeItem("cart");
         window.location.href = "order-placed.html";
 
-
-        // Optionally redirect or show further info here
       } catch (error) {
         console.error("Error placing order:", error);
         alert("Sorry, there was an error placing your order. Please try again.");
@@ -186,4 +178,3 @@
   </script>
 </body>
 </html>
-
