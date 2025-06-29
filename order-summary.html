@@ -182,10 +182,14 @@
           await emailjs.send("service_xyuqwgx", "template_hv5lzcf", {
             to_name: name,
             to_email: email,
-            order_items: cart.map(i => `${i.name} × ${i.quantity}`).join(", "),
-            order_total: `£${orderData.orderTotal.toFixed(2)}`,
+            phone: phone,
             delivery_address: address,
-            phone: phone
+            order_total: `£${orderData.orderTotal.toFixed(2)}`,
+            order_items_html: cart.map(i => ({
+              name: i.name,
+              quantity: i.quantity,
+              price: i.price.toFixed(2)
+            })),
           });
           console.log("Email sent successfully.");
 
