@@ -77,13 +77,12 @@
   </footer>
 
   <script>
-    // Wait for EmailJS SDK to be ready before using it
     window.onload = function () {
       console.log("Page loaded, initializing EmailJS and Firebase...");
 
-      // Initialize EmailJS - replace with your EmailJS User ID
+      // Initialize EmailJS
       try {
-        emailjs.init("P-GPrhdHp8xks6I3k");
+        emailjs.init("P-GPrhdHp8xks6I3k"); // your EmailJS User ID
         console.log("EmailJS initialized successfully.");
       } catch (e) {
         console.error("EmailJS initialization error:", e);
@@ -100,7 +99,6 @@
         measurementId: "G-VT5ZG2231H"
       };
 
-      // Initialize Firebase
       try {
         firebase.initializeApp(firebaseConfig);
         console.log("Firebase initialized successfully.");
@@ -110,12 +108,10 @@
 
       const db = firebase.firestore();
 
-      // DOM elements
       const orderItemsEl = document.getElementById("order-items");
       const orderTotalEl = document.getElementById("order-total");
       const form = document.getElementById("order-form");
 
-      // Load cart from localStorage
       let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
       if (cart.length === 0) {
@@ -178,6 +174,15 @@
           await db.collection("orders").add(orderData);
           console.log("Order saved to Firestore successfully.");
 
+          // Convert cart items to HTML string for email template (EmailJS expects a string)
+          const orderItemsHtmlString = cart.map(item =>
+            `<tr>
+              <td style="padding: 8px; border: 1px solid #ccc;">${item.name}</td>
+              <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">${item.quantity}</td>
+              <td style="padding: 8px; border: 1px solid #ccc; text-align: right;">£${item.price.toFixed(2)}</td>
+            </tr>`
+          ).join("");
+
           console.log("Sending order confirmation email...");
           await emailjs.send("service_xyuqwgx", "template_hv5lzcf", {
             to_name: name,
@@ -185,15 +190,10 @@
             phone: phone,
             delivery_address: address,
             order_total: `£${orderData.orderTotal.toFixed(2)}`,
-            order_items_html: cart.map(i => ({
-              name: i.name,
-              quantity: i.quantity,
-              price: i.price.toFixed(2)
-            })),
+            order_items_html: orderItemsHtmlString
           });
           console.log("Email sent successfully.");
 
-          // Clear cart and redirect
           localStorage.removeItem("cart");
           console.log("Cart cleared. Redirecting to order placed page.");
           window.location.href = "order-placed.html";
@@ -203,7 +203,7 @@
           alert("Sorry, there was an error placing your order. Please try again.");
         }
       });
-    }
+    };
   </script>
 </body>
 </html>
