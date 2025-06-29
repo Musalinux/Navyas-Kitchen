@@ -165,11 +165,12 @@
         await emailjs.send("service_xyuqwgx", "template_hv5lzcf", {
           to_name: name,
           to_email: email,
-          order_items: cart.map(i => `${i.name} × ${i.quantity}`).join(", "),
+          order_items: cart.map(i => `${i.name} × ${i.quantity}`),
           order_total: `£${orderData.orderTotal.toFixed(2)}`,
           delivery_address: address,
           phone: phone
         });
+
 
         // Clear cart and form
         localStorage.removeItem("cart");
