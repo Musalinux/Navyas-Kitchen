@@ -77,105 +77,129 @@
   </footer>
 
   <script>
-    // Initialize EmailJS
-    emailjs.init("P-GPrhdHp8xks6I3k"); // Replace with your EmailJS user ID
+    // Wait for EmailJS SDK to be ready before using it
+    window.onload = function () {
+      console.log("Page loaded, initializing EmailJS and Firebase...");
 
-    // Firebase configuration - replace with your config from Firebase console
-    const firebaseConfig = {
-      apiKey: "AIzaSyBipTTlXd9AborWei9hoZtF8OUDNiiDbxU",
-      authDomain: "navyas-kitchen.firebaseapp.com",
-      projectId: "navyas-kitchen",
-      storageBucket: "navyas-kitchen.firebasestorage.app",
-      messagingSenderId: "921823962646",
-      appId: "1:921823962646:web:4c9fe4c1d483aa5f5d7737",
-      measurementId: "G-VT5ZG2231H"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const orderItemsEl = document.getElementById("order-items");
-    const orderTotalEl = document.getElementById("order-total");
-    const form = document.getElementById("order-form");
-
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-    if (cart.length === 0) {
-      orderItemsEl.innerHTML = "<p class='text-gray-600'>Your cart is empty. Please add some items from the menu.</p>";
-      form.style.display = "none";
-    } else {
-      renderOrderItems();
-    }
-
-    function renderOrderItems() {
-      orderItemsEl.innerHTML = "";
-      let total = 0;
-      cart.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
-        orderItemsEl.innerHTML += `
-          <div class="flex justify-between mb-2 border-b pb-2">
-            <span>${item.name} × ${item.quantity}</span>
-            <span>£${itemTotal.toFixed(2)}</span>
-          </div>
-        `;
-      });
-      orderTotalEl.textContent = `£${total.toFixed(2)}`;
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      if (cart.length === 0) {
-        alert("Your cart is empty!");
-        return;
+      // Initialize EmailJS - replace with your EmailJS User ID
+      try {
+        emailjs.init("P-GPrhdHp8xks6I3k");
+        console.log("EmailJS initialized successfully.");
+      } catch (e) {
+        console.error("EmailJS initialization error:", e);
       }
 
-      const name = form.name.value.trim();
-      const email = form.email.value.trim();
-      const phone = form.phone.value.trim();
-      const address = form.address.value.trim();
-
-      if (!name || !email || !phone || !address) {
-        alert("Please fill in all fields.");
-        return;
-      }
-
-      const orderData = {
-        customerName: name,
-        customerEmail: email,
-        customerPhone: phone,
-        deliveryAddress: address,
-        orderItems: cart,
-        orderTotal: cart.reduce((sum, i) => sum + i.price * i.quantity, 0),
-        orderDate: new Date().toISOString()
+      // Firebase config
+      const firebaseConfig = {
+        apiKey: "AIzaSyBipTTlXd9AborWei9hoZtF8OUDNiiDbxU",
+        authDomain: "navyas-kitchen.firebaseapp.com",
+        projectId: "navyas-kitchen",
+        storageBucket: "navyas-kitchen.firebasestorage.app",
+        messagingSenderId: "921823962646",
+        appId: "1:921823962646:web:4c9fe4c1d483aa5f5d7737",
+        measurementId: "G-VT5ZG2231H"
       };
 
+      // Initialize Firebase
       try {
-        // Save order to Firebase Firestore
-        await db.collection("orders").add(orderData);
-
-        // Send order confirmation email with EmailJS
-        await emailjs.send("service_xyuqwgx", "template_hv5lzcf", {
-          to_name: name,
-          to_email: email,
-          order_items: cart.map(i => `${i.name} × ${i.quantity}`).join(", "), // join to make a string
-          order_total: `£${orderData.orderTotal.toFixed(2)}`,
-          delivery_address: address,
-          phone: phone
-        });
-
-
-        // Clear cart and redirect to order placed page
-        localStorage.removeItem("cart");
-        window.location.href = "order-placed.html";
-
-      } catch (error) {
-        console.error("Error placing order:", error);
-        alert("Sorry, there was an error placing your order. Please try again.");
+        firebase.initializeApp(firebaseConfig);
+        console.log("Firebase initialized successfully.");
+      } catch (e) {
+        console.error("Firebase initialization error:", e);
       }
-    });
+
+      const db = firebase.firestore();
+
+      // DOM elements
+      const orderItemsEl = document.getElementById("order-items");
+      const orderTotalEl = document.getElementById("order-total");
+      const form = document.getElementById("order-form");
+
+      // Load cart from localStorage
+      let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+      if (cart.length === 0) {
+        orderItemsEl.innerHTML = "<p class='text-gray-600'>Your cart is empty. Please add some items from the menu.</p>";
+        form.style.display = "none";
+        console.log("Cart is empty - form hidden.");
+      } else {
+        renderOrderItems();
+      }
+
+      function renderOrderItems() {
+        orderItemsEl.innerHTML = "";
+        let total = 0;
+        cart.forEach(item => {
+          const itemTotal = item.price * item.quantity;
+          total += itemTotal;
+          orderItemsEl.innerHTML += `
+            <div class="flex justify-between mb-2 border-b pb-2">
+              <span>${item.name} × ${item.quantity}</span>
+              <span>£${itemTotal.toFixed(2)}</span>
+            </div>
+          `;
+        });
+        orderTotalEl.textContent = `£${total.toFixed(2)}`;
+        console.log("Rendered order items and total: £" + total.toFixed(2));
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (cart.length === 0) {
+          alert("Your cart is empty!");
+          console.warn("Order attempt with empty cart.");
+          return;
+        }
+
+        const name = form.name.value.trim();
+        const email = form.email.value.trim();
+        const phone = form.phone.value.trim();
+        const address = form.address.value.trim();
+
+        if (!name || !email || !phone || !address) {
+          alert("Please fill in all fields.");
+          console.warn("Order attempt with incomplete form.");
+          return;
+        }
+
+        const orderData = {
+          customerName: name,
+          customerEmail: email,
+          customerPhone: phone,
+          deliveryAddress: address,
+          orderItems: cart,
+          orderTotal: cart.reduce((sum, i) => sum + i.price * i.quantity, 0),
+          orderDate: new Date().toISOString()
+        };
+
+        try {
+          console.log("Saving order to Firebase Firestore...", orderData);
+          await db.collection("orders").add(orderData);
+          console.log("Order saved to Firestore successfully.");
+
+          console.log("Sending order confirmation email...");
+          await emailjs.send("service_xyuqwgx", "template_hv5lzcf", {
+            to_name: name,
+            to_email: email,
+            order_items: cart.map(i => `${i.name} × ${i.quantity}`).join(", "),
+            order_total: `£${orderData.orderTotal.toFixed(2)}`,
+            delivery_address: address,
+            phone: phone
+          });
+          console.log("Email sent successfully.");
+
+          // Clear cart and redirect
+          localStorage.removeItem("cart");
+          console.log("Cart cleared. Redirecting to order placed page.");
+          window.location.href = "order-placed.html";
+
+        } catch (error) {
+          console.error("Error placing order:", error);
+          alert("Sorry, there was an error placing your order. Please try again.");
+        }
+      });
+    }
   </script>
 </body>
 </html>
